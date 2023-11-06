@@ -19,8 +19,8 @@
 .cart-icon {
   color: #002961;
   cursor: pointer;
+}
 
-  &:hover {
-    color: #bb4430;
-  }
+.cart-icon:hover {
+  color: #bb4430;
 }
