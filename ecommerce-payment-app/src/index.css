@@ -7,5 +7,20 @@
 @layer base {
   html {
     font-family: "Roboto", "Helvetica", "Arial", "sans-serif";
+    color: #002961;
+  }
+}
+
+.logo {
+  width: 100%;
+  max-width: 110px;
+}
+
+.cart-icon {
+  color: #002961;
+  cursor: pointer;
+
+  &:hover {
+    color: #bb4430;
   }
 }
