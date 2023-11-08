@@ -1,19 +1,66 @@
 import React from "react";
-import { useState } from "react";
 import { BsTrash } from "react-icons/bs";
+import { useState, useEffect } from "react";
 
-function Cart() {
-  // Initialiser la quantité à 1
-  const [quantity, setQuantity] = useState(1);
+function Cart({ cart, removeFromCart }) {
+  const [cartItems, setCartItems] = useState(cart);
+  const [cartTotal, setCartTotal] = useState(0);
 
-  const incrementQuantity = () => {
-    setQuantity(quantity + 1);
+  useEffect(() => {
+    // Calcule le total du panier chaque fois que le panier change
+    calculateCartTotal();
+  });
+
+  // Augmente la quantité d'un produit dans le panier
+  const incrementQuantity = (productId) => {
+    const updatedCart = cartItems.map((product) =>
+      product.id === productId
+        ? {
+            ...product,
+            quantity: product.quantity + 1,
+          }
+        : product
+    );
+
+    // Vérifie si la quantité dans le panier est inférieure ou égale au stock
+    const productToUpdate = updatedCart.find(
+      (product) => product.id === productId
+    );
+    if (
+      productToUpdate &&
+      productToUpdate.quantity <= productToUpdate.inventory
+    ) {
+      setCartItems(updatedCart);
+      calculateCartTotal();
+    }
   };
 
-  const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
+  // Diminue la quantité d'un produit dans le panier
+  const decrementQuantity = (productId) => {
+    const updatedCart = cartItems.map((product) =>
+      product.id === productId && product.quantity > 1
+        ? {
+            ...product,
+            quantity: product.quantity - 1,
+          }
+        : product
+    );
+    // Met à jour le panier avec la nouvelle quantité
+    setCartItems(updatedCart);
+    calculateCartTotal();
+  };
+
+  // Calcule le total d'un produit en fonction de sa quantité
+  const calculateProductTotal = (product) => {
+    return product.price * product.quantity;
+  };
+
+  // Calcule le total du panier
+  const calculateCartTotal = () => {
+    const total = cartItems.reduce((acc, product) => {
+      return acc + calculateProductTotal(product);
+    }, 0);
+    setCartTotal(total);
   };
 
   return (
@@ -38,77 +85,93 @@ function Cart() {
                     <h2 className="font-bold">Total</h2>
                   </div>
                 </div>
-                <div className="py-4 mb-8 border-t border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex flex-wrap items-center mb-6 -mx-4 md:mb-8">
-                    <div className="w-full px-4 mb-6 md:w-3/6 lg:w-5/12 md:mb-0">
-                      <div className="flex flex-wrap items-center -mx-4">
-                        <div className="w-full px-4 mb-3 md:w-1/3">
-                          <div className="w-full h-96 md:h-24 md:w-24">
-                            <img
-                              src="https://i.postimg.cc/kGjz3dpD/pexels-cottonbro-3296434.jpg"
-                              alt=""
-                              className="object-cover w-full h-full"
-                            />
+                {/* Parcourt chaque product et affiche et prend la structure HTML(JSX) suivante => */}
+                {cartItems.map((product) => (
+                  <div
+                    key={product.id}
+                    className="py-4 mb-8 border-t border-b border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="flex flex-wrap items-center mb-6 -mx-4 md:mb-8">
+                      <div className="w-full px-4 mb-6 md:w-3/6 lg:w-5/12 md:mb-0">
+                        <div className="flex flex-wrap items-center -mx-4">
+                          <div className="w-full px-4 mb-3 md:w-1/3">
+                            <div className="w-full h-96 md:h-24 md:w-24">
+                              <img
+                                src="https://i.postimg.cc/kGjz3dpD/pexels-cottonbro-3296434.jpg"
+                                alt={product.name}
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+                          </div>
+                          <div className="w-2/3 px-4">
+                            <p className="mb-2 text-base font-bold">
+                              {product.name}
+                            </p>
                           </div>
                         </div>
-                        <div className="w-2/3 px-4">
-                          <p className="mb-2 text-base font-bold">DSL Camera</p>
+                      </div>
+                      <div className="hidden px-4 md:w-1/6 lg:block lg:w-2/12">
+                        <p className="text-lg font-bold">{product.price} €</p>
+                      </div>
+                      <div className="w-auto px-4 md:w-1/6 lg:w-2/12">
+                        <div className="inline-flex items-center px-1 font-semibold text-gray-500 border border-gray-200 rounded-md dark:border-gray-700 ">
+                          <button
+                            onClick={() => decrementQuantity(product.id)}
+                            className="py-2 hover:text-gray-700 dark:text-gray-400"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-dash"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"></path>
+                            </svg>
+                          </button>
+                          <input
+                            type="number"
+                            className="w-12 px-2 py-2 text-center border-0 rounded-md align-self text-base"
+                            placeholder="1"
+                            value={product.quantity}
+                            readOnly
+                          />
+                          <button
+                            onClick={() => incrementQuantity(product.id)}
+                            className="py-2"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-plus"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
+                            </svg>
+                          </button>
                         </div>
                       </div>
-                    </div>
-                    <div className="hidden px-4 md:w-1/6 lg:block lg:w-2/12">
-                      <p className="text-lg font-bold">00.00 €</p>
-                    </div>
-                    <div className="w-auto px-4 md:w-1/6 lg:w-2/12">
-                      <div className="inline-flex items-center px-1 font-semibold text-gray-500 border border-gray-200 rounded-md dark:border-gray-700 ">
-                        <button
-                          onClick={decrementQuantity}
-                          className="py-2 hover:text-gray-700 dark:text-gray-400"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-dash"
-                            viewBox="0 0 16 16"
+                      <div className="w-auto">
+                        <div className="inline-flex items-center px-1">
+                          <button
+                            onClick={() => removeFromCart(product.id)}
+                            className="hover:text-rose-600 dark:text-gray-400"
                           >
-                            <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"></path>
-                          </svg>
-                        </button>
-                        <input
-                          type="number"
-                          className="w-12 px-2 py-2 text-center border-0 rounded-md align-self md:text-right text-base"
-                          placeholder="1"
-                          value={quantity}
-                          readOnly
-                        />
-                        <button onClick={incrementQuantity} className="py-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-plus"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
-                          </svg>
-                        </button>
+                            <BsTrash size={20} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="w-auto">
-                      <div className="inline-flex items-center px-1">
-                        <button className="hover:text-rose-600 dark:text-gray-400">
-                          <BsTrash size={20} />
-                        </button>
+                      <div className="w-auto px-4 text-right md:w-1/6 lg:w-2/12 ">
+                        <p className="text-lg font-bold">
+                          {calculateProductTotal(product)} €
+                        </p>
                       </div>
-                    </div>
-                    <div className="w-auto px-4 text-right md:w-1/6 lg:w-2/12 ">
-                      <p className="text-lg font-bold">99.00 €</p>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
               <div className="w-full px-4">
                 <div className="p-6 border border-[#002961] bg-white md:p-8">
@@ -118,9 +181,9 @@ function Cart() {
                   </div>
                   <div className="flex items-center justify-between pb-4 mb-6 ">
                     <span className="text-xl font-bold">Total TTC</span>
-                    <span className="text-xl font-bold">199.00 €</span>
+                    <span className="text-xl font-bold">{cartTotal} €</span>
                   </div>
-                  <h2 className="text-base uppercase">Nous acceptons :</h2>
+                  <h2 className="text-base uppercase">Nous acceptons :</h2>
                   <div className="flex items-center mb-4 ">
                     <img
                       src="https://i.postimg.cc/g22HQhX0/70599-visa-curved-icon.png"
