@@ -24,4 +24,3 @@ yarn-error.log*
 
 backend/node_modules
 .env
-server.js
