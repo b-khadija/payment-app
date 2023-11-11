@@ -6,7 +6,10 @@ import Home from "./Pages/Home";
 import Cart from "./Pages/Cart";
 
 function App() {
-  const [cart, setCart] = useState([]); // Initialisez cart comme un tableau vide
+  const [cart, setCart] = useState(() => {
+    const storedCart = localStorage.getItem("cart");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
 
   const addToCart = (product) => {
     // Vérifiez si le produit est déjà dans le panier

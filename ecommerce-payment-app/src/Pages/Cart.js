@@ -5,62 +5,110 @@ import { useState, useEffect } from "react";
 function Cart({ cart, removeFromCart }) {
   const [cartItems, setCartItems] = useState(cart);
   const [cartTotal, setCartTotal] = useState(0);
+  const [isCartEmpty, setIsCartEmpty] = useState(true);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  // Synchroniser cartItems avec la propriété cart à chaque changement
+  useEffect(() => {
+    setCartItems(cart);
+  }, [cart]);
+
+  const handleOrderValidation = async () => {
+    const orderData = {
+      cartItems: cartItems.map((product) => ({
+        productId: product.id,
+        quantity: product.quantity,
+        totalPrice: product.price * product.quantity,
+      })),
+      totalCartPrice: cartTotal,
+    };
+
+    try {
+      const response = await fetch("http://localhost:8081/Orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        console.log("Commande validée avec succès!");
+        // Réinitialise le panier après la validation de la commande
+        setCartItems([]);
+        setOrderSuccess(true);
+        console.log(orderData);
+        // Vider le localStorage
+        localStorage.removeItem("cart");
+      } else {
+        console.error("Erreur lors de la validation de la commande");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la validation de la commande:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Met à jour l'état isCartEmpty en fonction du contenu du panier
+    setIsCartEmpty(cartItems.length === 0);
+  }, [cartItems]);
+
+  useEffect(() => {
+    // Charger le panier depuis le localStorage au montage du composant
+    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCartItems(storedCart);
+  }, []);
+
+  useEffect(() => {
+    // Sauvegarder le panier dans le localStorage à chaque changement
+    // Sauvegarder que si le panier n'a pas été validé
+    if (!cartTotal) {
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+    }
+  }, [cartItems, cartTotal]);
 
   useEffect(() => {
     // Calcule le total du panier chaque fois que le panier change
+    const calculateProductTotal = (product) => {
+      return product.price * product.quantity;
+    };
+
+    const calculateCartTotal = () => {
+      const total = cartItems.reduce(
+        (acc, product) => acc + calculateProductTotal(product),
+        0
+      );
+      // Arrondir le total à deux décimales
+      const roundedTotal = parseFloat(total.toFixed(2));
+      setCartTotal(roundedTotal);
+    };
+
     calculateCartTotal();
-  });
+  }, [cartItems]);
 
   // Augmente la quantité d'un produit dans le panier
   const incrementQuantity = (productId) => {
     const updatedCart = cartItems.map((product) =>
       product.id === productId
-        ? {
-            ...product,
-            quantity: product.quantity + 1,
-          }
+        ? { ...product, quantity: product.quantity + 1 }
         : product
     );
-
-    // Vérifie si la quantité dans le panier est inférieure ou égale au stock
-    const productToUpdate = updatedCart.find(
-      (product) => product.id === productId
-    );
-    if (
-      productToUpdate &&
-      productToUpdate.quantity <= productToUpdate.inventory
-    ) {
-      setCartItems(updatedCart);
-      calculateCartTotal();
-    }
+    setCartItems(updatedCart);
   };
 
   // Diminue la quantité d'un produit dans le panier
   const decrementQuantity = (productId) => {
     const updatedCart = cartItems.map((product) =>
       product.id === productId && product.quantity > 1
-        ? {
-            ...product,
-            quantity: product.quantity - 1,
-          }
+        ? { ...product, quantity: product.quantity - 1 }
         : product
     );
-    // Met à jour le panier avec la nouvelle quantité
     setCartItems(updatedCart);
-    calculateCartTotal();
   };
 
   // Calcule le total d'un produit en fonction de sa quantité
   const calculateProductTotal = (product) => {
     return product.price * product.quantity;
-  };
-
-  // Calcule le total du panier
-  const calculateCartTotal = () => {
-    const total = cartItems.reduce((acc, product) => {
-      return acc + calculateProductTotal(product);
-    }, 0);
-    setCartTotal(total);
   };
 
   return (
@@ -172,6 +220,16 @@ function Cart({ cart, removeFromCart }) {
                     </div>
                   </div>
                 ))}
+                {!orderSuccess && isCartEmpty && (
+                  <p className="text-center text-lg text-red-500 my-20 tracking-wide">
+                    Votre panier est vide.
+                  </p>
+                )}
+                {orderSuccess && (
+                  <p className="text-center text-lg font-bold text-green-500 my-20 tracking-wide">
+                    Commande validée avec succès ✨
+                  </p>
+                )}
               </div>
               <div className="w-full px-4">
                 <div className="p-6 border border-[#002961] bg-white md:p-8">
@@ -202,7 +260,10 @@ function Cart({ cart, removeFromCart }) {
                     />
                   </div>
                   <div className="flex items-center justify-between ">
-                    <button className="px-6 py-2 transition ease-in duration-200 text-xs text-center uppercase w-full block hover:bg-[#002961] text-[#002961] hover:text-white border-2 border-[#002961] focus:outline-none rounded-md">
+                    <button
+                      onClick={handleOrderValidation}
+                      className="px-6 py-2 transition ease-in duration-200 text-xs text-center uppercase w-full block hover:bg-[#002961] text-[#002961] hover:text-white border-2 border-[#002961] focus:outline-none rounded-md"
+                    >
                       Valider votre commande
                     </button>
                   </div>

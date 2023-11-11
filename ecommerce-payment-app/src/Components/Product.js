@@ -5,7 +5,7 @@ function Product({ addToCart, product }) {
     <div key={product.id} className="group relative">
       <div className="w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
         <img
-          src={`https://source.unsplash.com/random?sig=${Math.random()}`}
+          src="https://fakeimg.pl/300/"
           alt={product.name}
           className="h-full w-full object-cover object-center lg:h-full lg:w-full"
         />
@@ -20,10 +20,14 @@ function Product({ addToCart, product }) {
         <button
           onClick={() => addToCart(product)} // Appel de la fonction addToCart lorsque le bouton est cliqué
           disabled={product.quantity >= product.inventory} // Le bouton n'est plus cliquable si le stock est inférieure à la quantité dans le panier
-          className="px-6 py-2 transition ease-in duration-200 text-xs text-center uppercase w-full rounded-lg block hover:bg-[#002961] hover:text-white border-2 border-[#002961] focus:outline-none"
+          className={`px-6 py-2 transition ease-in duration-200 text-xs text-center uppercase w-full rounded-lg block hover:bg-[#002961] ${
+            product.inventory > 0
+              ? "hover:text-white border-2 border-[#002961]"
+              : "text-red-500 cursor-not-allowed"
+          } focus:outline-none`}
           type="button"
         >
-          Ajouter au panier
+          {product.inventory > 0 ? "Ajouter au panier" : "Rupture de stock"}
         </button>
       </div>
     </div>
