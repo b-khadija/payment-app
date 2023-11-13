@@ -16,6 +16,7 @@ Création d'une page e-commerce, avec des articles en vente et une validation de
   ```
 2. **Accéder au répertoire**
   ```
+  cd payment-app
   cd ecommerce-payment-app
   ```
 3. **Installer les dépendances du front-end**
