@@ -33,6 +33,28 @@ Création d'une page e-commerce, avec des articles en vente et une validation de
   cd backend
   npm install
   ```
+6. **Définir vos clées d'environnement**
+   - Ouvrez le fichier docker-compose.yml
+     > Modifier les informations suivantes pour 'mysql_db:'
+     ```
+       environment:
+      - DB_HOST=mysql_db (NE PAS MODIFIER)
+      - MYSQL_ROOT_PASSWORD=choisissez votre mot de passe pour l'utilisateur root
+      - MYSQL_DATABASE=The_Bradery (NE PAS MODIFIER)
+      - MYSQL_USER=Choisissez votre nom d'utilisateur
+      - MYSQL_PASSWORD=Choisissez un mot de passe
+     ```
+     
+     > Modifier les informations suivantes pour 'backend:'
+     > reprendre les mêmes informations saisies pour mysql_db
+     ```     
+       environment:
+      - DB_HOST=mysql_db (NE PAS MODIFIER)
+      - DB_USER=Choisissez votre nom d'utilisateur
+      - DB_PASSWORD=Choisissez un mot de passe
+      - DB_NAME=The_Bradey (NE PAS MODIFIER)
+      - DB_PORT=$DB_PORT (NE PAS MODIFIER)
+     ```
 
 ## Configuration Docker
 
