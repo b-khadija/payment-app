@@ -17,6 +17,11 @@ const db = mysql.createConnection({
   port: process.env.DB_PORT,
 });
 
+db.connect(function (err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
 app.get("/", (req, res) => {
   const sql = "SELECT * FROM Products";
   db.query(sql, (err, result) => {
