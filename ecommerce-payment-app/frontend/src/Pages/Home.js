@@ -6,7 +6,7 @@ function Home({ addToCart }) {
 
   useEffect(() => {
     // Requête pour récupérer la liste depuis localhost:8081
-    fetch("http://localhost:8081/")
+    fetch("http://localhost:8082/Products")
       .then((response) => response.json())
       .then((data) => setProducts(data))
       .catch((error) =>
