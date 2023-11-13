@@ -12,7 +12,7 @@ Création d'une page e-commerce, avec des articles en vente et une validation de
 ## Installation
 1. **Cloner le projet**
   ```
-  git clone https://github.com/b-khadija/payment-app.git)https://github.com/b-khadija/payment-app.git
+  git clone https://github.com/b-khadija/payment-app.git
   ```
 2. **Accéder au répertoire**
   ```
@@ -47,7 +47,7 @@ Création d'une page e-commerce, avec des articles en vente et une validation de
 2. Faites une sélection d'articles
 3. Accéder à votre panier
 4. Valider votre panier 
-> Les quantité sont limiter au stock dans l'inventaire 
+> Les quantitées sont limiter au stock dans l'inventaire 
 
 ## Arrêt de l'application
 
