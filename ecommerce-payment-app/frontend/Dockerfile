@@ -1,5 +1,5 @@
 # Première étape : Construire l'application React
-FROM node:20
+FROM node:20-alpine
 
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app/frontend

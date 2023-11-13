@@ -1,5 +1,5 @@
 # Image officielle de Node.js
-FROM node:20
+FROM node:20-alpine
 
 # Définir le répertoire de travail
 WORKDIR /app/backend
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Exposer le port sur lequel l'application sera en cours
-EXPOSE 8081
+# EXPOSE 8081
 
 # Commande pour lancer l'application
 CMD ["npm", "start"]
