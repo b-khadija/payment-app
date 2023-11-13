@@ -24,7 +24,7 @@ function Cart({ cart, removeFromCart }) {
     };
 
     try {
-      const response = await fetch("http://localhost:8081/Orders", {
+      const response = await fetch("http://localhost:8082/Orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
